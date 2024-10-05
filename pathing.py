@@ -16,9 +16,12 @@ def get_test_path():
 
 
 def get_random_path():
+    assert global_game_data is not None
+    assert graph_data is not None
+
     current_graph_index = global_game_data.current_graph_index
     current_graph = graph_data.graph_data[current_graph_index]
-    target_node = global_game_data.target_node[current_graph_index]
+    target_node_id = global_game_data.target_node[current_graph_index]
     exit_node_id = len(current_graph) - 1
     
     current_node_id = 0
@@ -28,8 +31,8 @@ def get_random_path():
     while (not found_target):
         adjacency_list = current_graph[current_node_id][1]
 
-        if (target_node in adjacency_list):
-            path.append(target_node)
+        if (target_node_id in adjacency_list):
+            path.append(target_node_id)
             found_target = True
         else:
             next = random.choice(adjacency_list)
@@ -48,6 +51,10 @@ def get_random_path():
             path.append(next)
             current_node_id = next
 
+    assert path is not None
+    assert 0 in path
+    assert target_node_id in path
+    assert exit_node_id in path
     return path
 
 

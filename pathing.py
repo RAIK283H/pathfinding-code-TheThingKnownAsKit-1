@@ -12,7 +12,9 @@ def set_current_graph_paths():
 
 
 def get_test_path():
-    return graph_data.test_path[global_game_data.current_graph_index]
+    path = graph_data.test_path[global_game_data.current_graph_index]
+    global_game_data.path_length.append(len(path))
+    return path
 
 
 def get_random_path():
@@ -55,6 +57,8 @@ def get_random_path():
     assert 0 in path
     assert target_node_id in path
     assert exit_node_id in path
+
+    global_game_data.path_length.append(len(path))
     return path
 
 

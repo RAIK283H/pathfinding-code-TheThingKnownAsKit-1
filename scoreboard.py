@@ -42,7 +42,6 @@ class Scoreboard:
                                                       y=0,
                                                       font_name='Arial',
                                                       font_size=self.font_size, batch=batch, group=group, color=player[2][colors.TEXT_INDEX])
-
             self.player_excess_distance_display.append(
                 (excess_distance_label, player))
             path_label = pyglet.text.Label("",
@@ -96,8 +95,13 @@ class Scoreboard:
                 if player_object.player_config_data == player_configuration_info:
                     display_element.text = "Excess Distance Traveled: " + str(max(0, int(player_object.distance_traveled-self.distance_to_exit)))
 
+    def update_path_list(self):
+        for index in range(len(config_data.player_data)):
+            self.player_path_display[index][0].text = self.wrap_text("Path length: " + str(len(global_game_data.graph_paths[index])))
+
     def update_scoreboard(self):
         self.update_elements_locations()
         self.update_paths()
         self.update_distance_to_exit()
         self.update_distance_traveled()
+        self.update_path_list()

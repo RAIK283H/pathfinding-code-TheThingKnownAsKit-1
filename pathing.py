@@ -122,6 +122,14 @@ def get_dfs_path():
         path.insert(list_length, vertex)
         vertex = parents[vertex]
 
+    assert target_node_id in path
+    assert exit_node_id in path
+    # Assert that every pair of sequential vertices in the path is connected by an edge
+    for i in range(len(parents) - 1):
+        v1 = parents[i]
+        v2 = parents[i + 1]
+        assert v2 in current_graph[v1][1]
+
     return path
 
 
@@ -185,7 +193,13 @@ def get_bfs_path():
         path.insert(list_length, vertex)
         vertex = parents[vertex]
 
-    path.pop()
+    assert target_node_id in path
+    assert exit_node_id in path
+    # Assert that every pair of sequential vertices in the path is connected by an edge
+    for i in range(len(parents) - 1):
+        v1 = parents[i]
+        v2 = parents[i + 1]
+        assert v2 in current_graph[v1][1]
 
     return path
 

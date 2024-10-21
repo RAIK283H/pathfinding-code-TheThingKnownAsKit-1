@@ -63,11 +63,131 @@ def get_random_path():
 
 
 def get_dfs_path():
-    return [1,2]
+    assert global_game_data is not None
+    assert graph_data is not None
+
+    current_graph_index = global_game_data.current_graph_index
+    current_graph = graph_data.graph_data[current_graph_index]
+    target_node_id = global_game_data.target_node[current_graph_index]
+    exit_node_id = len(current_graph) - 1
+    path = []
+
+    frontier = [global_game_data.current_player_index]
+
+    visited = set()
+    visited.add(global_game_data.current_player_index)
+
+    parents = {}
+    parents[global_game_data.current_player_index] = False
+
+    # Find the target
+    while frontier:
+        vertex = frontier.pop()
+
+        if vertex == target_node_id:
+            break
+        
+        adjacency_list = current_graph[vertex][1]
+        for neighbor in adjacency_list:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                parents[neighbor] = vertex
+                frontier.append(neighbor)
+
+    while vertex:
+        path.insert(0, vertex)
+        vertex = parents[vertex]
+    
+    # Find the exit
+    frontier = [target_node_id]
+    visited = set()
+    visited.add(target_node_id)
+    parents = {}
+    parents[target_node_id] = False
+    while frontier:
+        vertex = frontier.pop()
+
+        if vertex == exit_node_id:
+            break
+
+        adjacency_list = current_graph[vertex][1]
+        for neighbor in adjacency_list:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                parents[neighbor] = vertex
+                frontier.append(neighbor)
+    
+    list_length = len(path)
+    while vertex:
+        path.insert(list_length, vertex)
+        vertex = parents[vertex]
+
+    return path
 
 
 def get_bfs_path():
-    return [1,2]
+    assert global_game_data is not None
+    assert graph_data is not None
+
+    current_graph_index = global_game_data.current_graph_index
+    current_graph = graph_data.graph_data[current_graph_index]
+    target_node_id = global_game_data.target_node[current_graph_index]
+    exit_node_id = len(current_graph) - 1
+    path = []
+
+    frontier = [global_game_data.current_player_index]
+
+    visited = set()
+    visited.add(global_game_data.current_player_index)
+
+    parents = {}
+    parents[global_game_data.current_player_index] = False
+
+    # Find the target
+    while frontier:
+        vertex = frontier.pop(0)
+
+        if vertex == target_node_id:
+            break
+        
+        adjacency_list = current_graph[vertex][1]
+        for neighbor in adjacency_list:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                parents[neighbor] = vertex
+                frontier.append(neighbor)
+
+    while vertex:
+        path.insert(0, vertex)
+        vertex = parents[vertex]
+    
+    # Find the exit
+    frontier = [target_node_id]
+    visited = set()
+    visited.add(target_node_id)
+    parents = {}
+    parents[target_node_id] = False
+    while frontier:
+        vertex = frontier.pop(0)
+
+        if vertex == exit_node_id:
+            break
+
+        adjacency_list = current_graph[vertex][1]
+        for neighbor in adjacency_list:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                parents[neighbor] = vertex
+                frontier.append(neighbor)
+    
+    list_length = len(path)
+    while vertex:
+        path.insert(list_length, vertex)
+        vertex = parents[vertex]
+
+    path.pop()
+
+    return path
 
 
 def get_dijkstra_path():

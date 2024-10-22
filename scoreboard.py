@@ -13,6 +13,7 @@ class Scoreboard:
     player_path_display = []
 
     def __init__(self, batch, group):
+        self.winner_updated = False
         self.batch = batch
         self.group = group
         self.stat_height = 32
@@ -23,6 +24,12 @@ class Scoreboard:
         self.distance_to_exit_label = pyglet.text.Label('Direct Distance To Exit : 0', x=0, y=0,
                                                         font_name='Arial', font_size=self.font_size, batch=batch, group=group)
         self.distance_to_exit = 0
+        # New label for the winner
+        self.winner_label = pyglet.text.Label('',
+                                              x=0,
+                                              y=0,
+                                              font_name='Arial',
+                                              font_size=self.font_size, batch=batch, group=group)
         for index, player in enumerate(config_data.player_data):
             player_name_label = pyglet.text.Label(str(index + 1) + " " + player[0],
                                                   x=0,
@@ -68,9 +75,16 @@ class Scoreboard:
             display_element.x = config_data.window_width - self.stat_width
             display_element.y = config_data.window_height - self.base_height_offset - self.stat_height * 5 - self.stat_height * (index * self.number_of_stats)
 
+        # Position the winner label at the bottom right corner
+        self.winner_label.x = config_data.window_width - self.stat_width
+        self.winner_label.y = self.base_height_offset
+
     def update_paths(self):
         for index in range(len(config_data.player_data)):
-            self.player_path_display[index][0].text = self.wrap_text(str(global_game_data.graph_paths[index]))
+            if index < len(global_game_data.graph_paths):
+                self.player_path_display[index][0].text = self.wrap_text(str(global_game_data.graph_paths[index]))
+            else:
+                self.player_path_display[index][0].text = self.wrap_text("Path not available")
 
     def update_distance_to_exit(self):
         start_x = graph_data.graph_data[global_game_data.current_graph_index][0][0][0]
@@ -95,13 +109,41 @@ class Scoreboard:
                 if player_object.player_config_data == player_configuration_info:
                     display_element.text = "Excess Distance Traveled: " + str(max(0, int(player_object.distance_traveled-self.distance_to_exit)))
 
-    def update_path_list(self):
+    def update_path_length(self):
         for index in range(len(config_data.player_data)):
-            self.player_path_display[index][0].text = self.wrap_text("Path length: " + str(len(global_game_data.graph_paths[index])))
+            if index < len(global_game_data.graph_paths):
+                path_length = len(global_game_data.graph_paths[index])
+                self.player_path_display[index][0].text = self.wrap_text("Path length: " + str(path_length))
+            else:
+                self.player_path_display[index][0].text = self.wrap_text("Path length: N/A")
+
+    def update_winner(self):
+        if self.winner_updated:
+            return
+
+        winner = None
+        shortest_distance = float('inf')
+
+        target_node_index = global_game_data.target_node[global_game_data.current_graph_index]
+
+        for player in global_game_data.player_objects:
+            if target_node_index in global_game_data.graph_paths[player.player_index]:
+                distance_to_target = player.distance_traveled
+                if distance_to_target < shortest_distance:
+                    shortest_distance = distance_to_target
+                    winner = player
+
+        if winner:
+            self.winner_label.text = f"The current winner is {winner.player_config_data[0]}!!!"
+        else:
+            self.winner_label.text = "No Winner Yet"
+
+        self.winner_updated = True
 
     def update_scoreboard(self):
         self.update_elements_locations()
         self.update_paths()
         self.update_distance_to_exit()
         self.update_distance_traveled()
-        self.update_path_list()
+        self.update_path_length()
+        self.update_winner()

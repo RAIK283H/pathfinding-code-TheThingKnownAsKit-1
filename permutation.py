@@ -57,3 +57,11 @@ def is_hamiltonian_cycle(permutation, graph):
     elif (permutation[i] not in graph[i - 1][1]):
       return False
   return True
+
+def permutation_start(graph):
+  cycles = sjt(len(graph), graph)
+  for count, cycle in enumerate(cycles.keys()):
+    print(f"Permutation: {count + 1}")
+    print(f"\t{cycle}")
+    print(f"\tIs Hamiltonian? {cycles[cycle]}")
+  

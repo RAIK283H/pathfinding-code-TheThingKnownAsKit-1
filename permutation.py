@@ -9,7 +9,6 @@ def sjt(length, graph):
 
   while True:
     hamiltonian_cycles[tuple(permutation)] = is_hamiltonian_cycle(permutation, graph)
-    print(permutation)
 
     largest_mobile = -1
     mobile_index = -1
@@ -52,4 +51,9 @@ def swap(permutation, val1, val2):
   permutation[val1], permutation[val2] = permutation[val2], permutation[val1]
 
 def is_hamiltonian_cycle(permutation, graph):
+  for i in range(len(permutation) - 1):
+    if (permutation[i + 1] not in graph[i][1]):
+      return False
+    elif (permutation[i] not in graph[i - 1][1]):
+      return False
   return True

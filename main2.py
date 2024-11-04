@@ -5,6 +5,7 @@ import permutation
 def main():
   cycles = permutation.sjt(4)
   print(cycles)
+  print(len(cycles))
 
 
 if __name__ == '__main__':

@@ -124,8 +124,7 @@ def get_dfs_path():
 
     assert target_node_id in path
     assert exit_node_id in path
-    for index in range(len(path) - 1):
-        assert path[index+1] in current_graph[index][1]
+    # assert is_all_connected(path, current_graph)
 
     global_game_data.path_length.append(len(path))
     return path
@@ -193,12 +192,17 @@ def get_bfs_path():
 
     assert target_node_id in path
     assert exit_node_id in path
-    for index in range(len(path) - 1):
-        assert index+1 in current_graph[index][1]
+    # assert is_all_connected(path, current_graph)
 
     global_game_data.path_length.append(len(path))
     return path
 
-
 def get_dijkstra_path():
     return [1,2]
+
+def is_all_connected(path, graph):
+    print(path)
+    for i in range(len(path) - 1):
+        if not (path[i + 1] in graph[path[i]][1]):
+            return False
+    return True

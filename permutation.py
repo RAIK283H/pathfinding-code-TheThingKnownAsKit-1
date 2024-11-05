@@ -51,11 +51,19 @@ def swap(permutation, val1, val2):
   permutation[val1], permutation[val2] = permutation[val2], permutation[val1]
 
 def is_hamiltonian_cycle(permutation, graph):
+  # Check if the cycle visits each vertex exactly once
+  if len(permutation) != len(set(permutation)):
+    return False
+  
+  # Check connectivity between consecutive vertices
   for i in range(len(permutation) - 1):
-    if (permutation[i + 1] not in graph[i][1]):
+    if not (permutation[i + 1] in graph[permutation[i]][1]):
       return False
-    elif (permutation[i] not in graph[i - 1][1]):
-      return False
+          
+  # Check that the last vertex connects back to the first vertex
+  if not (permutation[0] in graph[permutation[-1]][1]):
+    return False
+      
   return True
 
 def permutation_start(graph):
@@ -64,4 +72,3 @@ def permutation_start(graph):
     print(f"Permutation: {count + 1}")
     print(f"\t{cycle}")
     print(f"\tIs Hamiltonian? {cycles[cycle]}")
-  

@@ -51,6 +51,12 @@ def swap(permutation, val1, val2):
   permutation[val1], permutation[val2] = permutation[val2], permutation[val1]
 
 def is_hamiltonian_cycle(permutation, graph):
+
+  # No index can be greater than the length of graph or errors
+  for i in range(len(permutation) - 1):
+    if permutation[i] >= len(graph):
+      return False
+
   # Check if the cycle visits each vertex exactly once
   if len(permutation) != len(set(permutation)):
     return False

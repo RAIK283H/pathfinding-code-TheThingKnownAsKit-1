@@ -75,6 +75,24 @@ class TestPathFinding(unittest.TestCase):
         self.assertFalse(permutation.is_hamiltonian_cycle(cycle_1_incorrect, self.graph_1))
         self.assertTrue(permutation.is_hamiltonian_cycle(cycle_2_correct, self.graph_2))
         self.assertFalse(permutation.is_hamiltonian_cycle(cycle_2_incorrect, self.graph_2))
+    
+    def test_permutations(self):
+        permutations = permutation.sjt(len(self.graph_1), self.graph_1)
+        permutations = list(permutations.keys())
+        print(permutations)
+        expected = [
+            [1, 2, 3],
+            [1, 3, 2],
+            [3, 1, 2],
+            [3, 2, 1],
+            [2, 3, 1],
+            [2, 1, 3]
+        ]
+
+        self.assertEqual(len(permutations), len(expected))
+        for perm in range(len(permutations)):
+            for i in range(len(permutations[perm])):
+                self.assertEqual(permutations[perm][i], expected[perm][i])
 
 if __name__ == '__main__':
     unittest.main()

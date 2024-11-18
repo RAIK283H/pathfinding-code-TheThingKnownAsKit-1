@@ -79,7 +79,6 @@ class TestPathFinding(unittest.TestCase):
     def test_permutations(self):
         permutations = permutation.sjt(len(self.graph_1), self.graph_1)
         permutations = list(permutations.keys())
-        print(permutations)
         expected = [
             [1, 2, 3],
             [1, 3, 2],

@@ -54,16 +54,22 @@ class TestPathFinding(unittest.TestCase):
         self.assertAlmostEqual(first=almost_pi, second=pi, delta=1e-1)
     
     def test_dfs_path(self):
-        expected_dfs_path = [1, 1, 2]
+        expected_dfs_path = [1, 2]
         dfs_path = pathing.get_dfs_path()
         
         self.assertEqual(dfs_path, expected_dfs_path)
     
     def test_bfs_path(self):
-        expected_bfs_path = [1, 1, 2]
+        expected_bfs_path = [1, 2]
         bfs_path = pathing.get_bfs_path()
         
         self.assertEqual(bfs_path, expected_bfs_path)
+    
+    def test_dijkstra_path(self):
+        expected_dijkstra_path = [1, 2, 1]
+        dijkstra_path = pathing.get_dijkstra_path()
+
+        self.assertEqual(dijkstra_path, expected_dijkstra_path)
 
     def test_hamiltonian_cycle(self):
         cycle_1_correct = [0, 1]

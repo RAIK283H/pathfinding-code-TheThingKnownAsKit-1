@@ -2,6 +2,7 @@ import graph_data
 import global_game_data
 from numpy import random
 import heapq as heap
+import math
 
 def set_current_graph_paths():
     global_game_data.graph_paths.clear()
@@ -218,45 +219,13 @@ def get_dijkstra_path():
     frontier = []
     heap.heapify(frontier)
     heap.heappush(frontier, (0, 0))
-
     visited = set()
-    visited.add(0)
-
-    parents = {}
-    parents[0] = False
-
-    dist_count = 0
+    parents = {0: False}
+    distances = {0: 0}
 
     # Find the target
     while frontier:
-        dist_count += 1
-        vertex = heap.heappop(frontier)[1]
-
-        if vertex == target_node_id:
-            break
-        
-        adjacency_list = current_graph[vertex][1]
-        for neighbor in adjacency_list:
-            if neighbor not in visited:
-                visited.add(neighbor)
-                parents[neighbor] = vertex
-                heap.heappush(frontier, (dist_count, neighbor))
-
-    while vertex:
-        path.insert(0, vertex)
-        vertex = parents[vertex]
-    
-    # Find the exit
-    frontier = []
-    heap.heapify(frontier)
-    heap.heappush(frontier, (0, target_node_id))
-    parents = {}
-    parents[target_node_id] = vertex
-    visited = set()
-    visited.add(target_node_id)
-    while frontier:
-        dist_count += 1
-        vertex = heap.heappop(frontier)[1]
+        current_cost, vertex = heap.heappop(frontier)
 
         if vertex == exit_node_id:
             break
@@ -266,17 +235,60 @@ def get_dijkstra_path():
             if neighbor not in visited:
                 visited.add(neighbor)
                 parents[neighbor] = vertex
-                heap.heappush(frontier, (dist_count, neighbor))
-    
-    list_length = len(path) - 1
+
+                vertex_coords = current_graph[vertex][0]
+                neighbor_coords = current_graph[neighbor][0]
+                distance = math.sqrt((neighbor_coords[0] - vertex_coords[0])**2 + (neighbor_coords[1] - vertex_coords[1])**2)
+                new_cost = distance + current_cost
+                if neighbor not in distances or new_cost < distances[neighbor]:
+                    distances[neighbor] = new_cost
+                    parents[neighbor] = vertex
+                    heap.heappush(frontier, (new_cost, neighbor))
+
+    vertex = exit_node_id
     while vertex:
-        path.insert(list_length, vertex)
+        path.insert(0, vertex)
         vertex = parents[vertex]
+    
+    # Find the exit
+    # frontier = []
+    # heap.heapify(frontier)
+    # heap.heappush(frontier, (0, target_node_id))
+    # visited = set()
+    # parents = {}
+    # parents[target_node_id] = False
+    # distances = {target_node_id: 0}
+    # while frontier:
+    #     current_cost, vertex = heap.heappop(frontier)
+
+    #     if vertex == exit_node_id:
+    #         break
+        
+    #     adjacency_list = current_graph[vertex][1]
+    #     for neighbor in adjacency_list:
+    #         if neighbor not in visited:
+    #             visited.add(neighbor)
+    #             parents[neighbor] = vertex
+
+    #             vertex_coords = current_graph[vertex][0]
+    #             neighbor_coords = current_graph[neighbor][0]
+    #             distance = math.sqrt((neighbor_coords[0] - vertex_coords[0])**2 + (neighbor_coords[1] - vertex_coords[1])**2)
+    #             new_cost = distance + current_cost
+    #             if neighbor not in distances or new_cost < distances[neighbor]:
+    #                 distances[neighbor] = new_cost
+    #                 parents[neighbor] = vertex
+    #                 heap.heappush(frontier, (new_cost, neighbor))
+    
+    # list_length = len(path) - 1
+    # while vertex:
+    #     path.insert(list_length, vertex)
+    #     vertex = parents[vertex]
 
     assert target_node_id in path
     assert exit_node_id in path
     assert is_all_connected(path, current_graph)
 
+    path.pop()
     global_game_data.path_length.append(len(path))
     return path
 

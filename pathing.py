@@ -213,103 +213,70 @@ def get_dijkstra_path():
     current_graph = graph_data.graph_data[current_graph_index]
     target_node_id = global_game_data.target_node[current_graph_index]
     exit_node_id = len(current_graph) - 1
-    path = []
 
-    frontier = []
-    heap.heapify(frontier)
-    heap.heappush(frontier, (0, 0, 0))
-    visited = set()
-    parents = {0: False}
-    distances = {0: 0}
+    def dijkstra(start_node, end_node, tie_target_coords):
+        frontier = []
+        heap.heapify(frontier)
+        heap.heappush(frontier, (0, start_node, 0))  # (cost, node, tie-breaker)
+        visited = set()
+        parents = {start_node: None}
+        distances = {start_node: 0}
 
-    while frontier:
-        current_cost, vertex, tie_breaker = heap.heappop(frontier)
-        if vertex in visited:
-            continue
-        visited.add(vertex)
+        while frontier:
+            current_cost, vertex, _ = heap.heappop(frontier)
 
-        if vertex == target_node_id:
-            break
-    
-        adjacency_list = current_graph[vertex][1]
-        for neighbor in adjacency_list:
-            if neighbor in visited:
+            if vertex in visited:
                 continue
+            visited.add(vertex)
 
-            vertex_coords = current_graph[vertex][0]
-            neighbor_coords = current_graph[neighbor][0]
-            target_coords = current_graph[target_node_id][0]
-            distance = math.sqrt((neighbor_coords[0] - vertex_coords[0])**2 + (neighbor_coords[1] - vertex_coords[1])**2)
-            new_cost = current_cost + distance
+            if vertex == end_node:
+                break
 
-            tie_distance = math.sqrt((target_coords[0] - neighbor_coords[0])**2 + (target_coords[1] - neighbor_coords[1])**2)
+            adjacency_list = current_graph[vertex][1]
+            for neighbor in adjacency_list:
+                if neighbor in visited:
+                    continue
 
-            if neighbor not in distances or new_cost < distances[neighbor]:
-                distances[neighbor] = new_cost
-                parents[neighbor] = vertex
-                heap.heappush(frontier, (new_cost, neighbor, tie_distance))
-            elif new_cost == distances[neighbor] and tie_distance < distances[neighbor]:
-                # Tie-breaking logic
-                distances[neighbor] = new_cost
-                parents[neighbor] = vertex
-                heap.heappush(frontier, (new_cost, neighbor, tie_distance))
+                vertex_coords = current_graph[vertex][0]
+                neighbor_coords = current_graph[neighbor][0]
+                distance = math.sqrt((neighbor_coords[0] - vertex_coords[0])**2 + (neighbor_coords[1] - vertex_coords[1])**2)
+                new_cost = current_cost + distance
 
-    vertex = target_node_id
-    while vertex:
-        path.insert(0, vertex)
-        vertex = parents[vertex]
-    
-    # Find the exit
-    frontier = []
-    heap.heapify(frontier)
-    heap.heappush(frontier, (0, target_node_id, 0))
-    visited = set()
-    parents = {}
-    parents[target_node_id] = False
-    distances = {target_node_id: 0}
-    while frontier:
-        current_cost, vertex, tie_breaker = heap.heappop(frontier)
-        if vertex in visited:
-            continue
-        visited.add(vertex)
+                tie_distance = math.sqrt((tie_target_coords[0] - neighbor_coords[0])**2 + (tie_target_coords[1] - neighbor_coords[1])**2)
 
-        if vertex == exit_node_id:
-            break
-    
-        adjacency_list = current_graph[vertex][1]
-        for neighbor in adjacency_list:
-            if neighbor in visited:
-                continue
+                if neighbor not in distances or new_cost < distances[neighbor]:
+                    distances[neighbor] = new_cost
+                    parents[neighbor] = vertex
+                    heap.heappush(frontier, (new_cost, neighbor, tie_distance))
+                elif new_cost == distances[neighbor] and tie_distance < math.sqrt(
+                    (tie_target_coords[0] - current_graph[parents[neighbor]][0][0])**2 +
+                    (tie_target_coords[1] - current_graph[parents[neighbor]][0][1])**2
+                ):
+                    # Update parent in case of tie-breaking
+                    parents[neighbor] = vertex
 
-            vertex_coords = current_graph[vertex][0]
-            neighbor_coords = current_graph[neighbor][0]
-            exit_coords = current_graph[exit_node_id][0]
-            distance = math.sqrt((neighbor_coords[0] - vertex_coords[0])**2 + (neighbor_coords[1] - vertex_coords[1])**2)
-            new_cost = current_cost + distance
+        sub_path = []
+        current = end_node
+        while current is not None:
+            sub_path.insert(0, current)
+            current = parents.get(current)
 
-            tie_distance = math.sqrt((exit_coords[0] - neighbor_coords[0])**2 + (exit_coords[1] - neighbor_coords[1])**2)
+        return sub_path
 
-            if neighbor not in distances or new_cost < distances[neighbor]:
-                distances[neighbor] = new_cost
-                parents[neighbor] = vertex
-                heap.heappush(frontier, (new_cost, neighbor, tie_distance))
-            elif new_cost == distances[neighbor] and tie_distance < distances[neighbor]:
-                # Tie-breaking logic
-                distances[neighbor] = new_cost
-                parents[neighbor] = vertex
-                heap.heappush(frontier, (new_cost, neighbor, tie_distance))
-    
-    vertex = exit_node_id
-    length = len(path) - 1
-    while vertex:
-        path.insert(length, vertex)
-        vertex = parents[vertex]
+    target_coords = current_graph[target_node_id][0]
+    exit_coords = current_graph[exit_node_id][0]
+
+    path_to_target = dijkstra(0, target_node_id, target_coords)
+    path_to_exit = dijkstra(target_node_id, exit_node_id, exit_coords)
+
+    path = path_to_target[:-1] + path_to_exit
+   
+    print(path)
 
     assert target_node_id in path
     assert exit_node_id in path
     assert is_all_connected(path, current_graph)
 
-    path.pop()
     global_game_data.path_length.append(len(path))
     return path
 

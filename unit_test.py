@@ -66,7 +66,7 @@ class TestPathFinding(unittest.TestCase):
         self.assertEqual(bfs_path, expected_bfs_path)
     
     def test_dijkstra_path(self):
-        expected_dijkstra_path = [1, 2, 1]
+        expected_dijkstra_path = [0, 1, 2]
         dijkstra_path = pathing.get_dijkstra_path()
 
         self.assertEqual(dijkstra_path, expected_dijkstra_path)

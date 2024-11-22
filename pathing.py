@@ -127,6 +127,8 @@ def get_dfs_path():
         path.insert(0, vertex)
         vertex = parents[vertex]
 
+    path.pop()
+
     assert target_node_id in path
     assert exit_node_id in path
     assert is_all_connected(path, current_graph)
@@ -197,6 +199,8 @@ def get_bfs_path():
     while vertex:
         path.insert(0, vertex)
         vertex = parents[vertex]
+
+    path.pop()
 
     assert target_node_id in path
     assert exit_node_id in path

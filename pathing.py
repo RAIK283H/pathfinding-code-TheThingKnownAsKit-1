@@ -97,6 +97,7 @@ def get_dfs_path():
                 parents[neighbor] = vertex
                 frontier.append(neighbor)
 
+    vertex = target_node_id
     while vertex:
         path.insert(0, vertex)
         vertex = parents[vertex]
@@ -121,17 +122,15 @@ def get_dfs_path():
                 parents[neighbor] = vertex
                 frontier.insert(0, neighbor)
     
-    list_length = len(path) - 1
+    vertex = exit_node_id
     while vertex:
-        path.insert(list_length, vertex)
+        path.insert(0, vertex)
         vertex = parents[vertex]
 
     assert target_node_id in path
     assert exit_node_id in path
     assert is_all_connected(path, current_graph)
 
-    path.pop()
-    print(f"graph {current_graph_index} path {path}")
     global_game_data.path_length.append(len(path))
     return path
 
@@ -169,6 +168,7 @@ def get_bfs_path():
                 parents[neighbor] = vertex
                 frontier.insert(0, neighbor)
 
+    vertex = target_node_id
     while vertex:
         path.insert(0, vertex)
         vertex = parents[vertex]
@@ -193,16 +193,15 @@ def get_bfs_path():
                 parents[neighbor] = vertex
                 frontier.insert(0, neighbor)
     
-    list_length = len(path) - 1
+    vertex = exit_node_id
     while vertex:
-        path.insert(list_length, vertex)
+        path.insert(0, vertex)
         vertex = parents[vertex]
 
     assert target_node_id in path
     assert exit_node_id in path
     assert is_all_connected(path, current_graph)
 
-    path.pop()
     global_game_data.path_length.append(len(path))
     return path
 
@@ -218,71 +217,93 @@ def get_dijkstra_path():
 
     frontier = []
     heap.heapify(frontier)
-    heap.heappush(frontier, (0, 0))
+    heap.heappush(frontier, (0, 0, 0))
     visited = set()
     parents = {0: False}
     distances = {0: 0}
 
-    # Find the target
     while frontier:
-        current_cost, vertex = heap.heappop(frontier)
+        current_cost, vertex, tie_breaker = heap.heappop(frontier)
+        if vertex in visited:
+            continue
+        visited.add(vertex)
 
-        if vertex == exit_node_id:
+        if vertex == target_node_id:
             break
-        
+    
         adjacency_list = current_graph[vertex][1]
         for neighbor in adjacency_list:
-            if neighbor not in visited:
-                visited.add(neighbor)
+            if neighbor in visited:
+                continue
+
+            vertex_coords = current_graph[vertex][0]
+            neighbor_coords = current_graph[neighbor][0]
+            target_coords = current_graph[target_node_id][0]
+            distance = math.sqrt((neighbor_coords[0] - vertex_coords[0])**2 + (neighbor_coords[1] - vertex_coords[1])**2)
+            new_cost = current_cost + distance
+
+            tie_distance = math.sqrt((target_coords[0] - neighbor_coords[0])**2 + (target_coords[1] - neighbor_coords[1])**2)
+
+            if neighbor not in distances or new_cost < distances[neighbor]:
+                distances[neighbor] = new_cost
                 parents[neighbor] = vertex
+                heap.heappush(frontier, (new_cost, neighbor, tie_distance))
+            elif new_cost == distances[neighbor] and tie_distance < distances[neighbor]:
+                # Tie-breaking logic
+                distances[neighbor] = new_cost
+                parents[neighbor] = vertex
+                heap.heappush(frontier, (new_cost, neighbor, tie_distance))
 
-                vertex_coords = current_graph[vertex][0]
-                neighbor_coords = current_graph[neighbor][0]
-                distance = math.sqrt((neighbor_coords[0] - vertex_coords[0])**2 + (neighbor_coords[1] - vertex_coords[1])**2)
-                new_cost = distance + current_cost
-                if neighbor not in distances or new_cost < distances[neighbor]:
-                    distances[neighbor] = new_cost
-                    parents[neighbor] = vertex
-                    heap.heappush(frontier, (new_cost, neighbor))
-
-    vertex = exit_node_id
+    vertex = target_node_id
     while vertex:
         path.insert(0, vertex)
         vertex = parents[vertex]
     
     # Find the exit
-    # frontier = []
-    # heap.heapify(frontier)
-    # heap.heappush(frontier, (0, target_node_id))
-    # visited = set()
-    # parents = {}
-    # parents[target_node_id] = False
-    # distances = {target_node_id: 0}
-    # while frontier:
-    #     current_cost, vertex = heap.heappop(frontier)
+    frontier = []
+    heap.heapify(frontier)
+    heap.heappush(frontier, (0, target_node_id, 0))
+    visited = set()
+    parents = {}
+    parents[target_node_id] = False
+    distances = {target_node_id: 0}
+    while frontier:
+        current_cost, vertex, tie_breaker = heap.heappop(frontier)
+        if vertex in visited:
+            continue
+        visited.add(vertex)
 
-    #     if vertex == exit_node_id:
-    #         break
-        
-    #     adjacency_list = current_graph[vertex][1]
-    #     for neighbor in adjacency_list:
-    #         if neighbor not in visited:
-    #             visited.add(neighbor)
-    #             parents[neighbor] = vertex
-
-    #             vertex_coords = current_graph[vertex][0]
-    #             neighbor_coords = current_graph[neighbor][0]
-    #             distance = math.sqrt((neighbor_coords[0] - vertex_coords[0])**2 + (neighbor_coords[1] - vertex_coords[1])**2)
-    #             new_cost = distance + current_cost
-    #             if neighbor not in distances or new_cost < distances[neighbor]:
-    #                 distances[neighbor] = new_cost
-    #                 parents[neighbor] = vertex
-    #                 heap.heappush(frontier, (new_cost, neighbor))
+        if vertex == exit_node_id:
+            break
     
-    # list_length = len(path) - 1
-    # while vertex:
-    #     path.insert(list_length, vertex)
-    #     vertex = parents[vertex]
+        adjacency_list = current_graph[vertex][1]
+        for neighbor in adjacency_list:
+            if neighbor in visited:
+                continue
+
+            vertex_coords = current_graph[vertex][0]
+            neighbor_coords = current_graph[neighbor][0]
+            exit_coords = current_graph[exit_node_id][0]
+            distance = math.sqrt((neighbor_coords[0] - vertex_coords[0])**2 + (neighbor_coords[1] - vertex_coords[1])**2)
+            new_cost = current_cost + distance
+
+            tie_distance = math.sqrt((exit_coords[0] - neighbor_coords[0])**2 + (exit_coords[1] - neighbor_coords[1])**2)
+
+            if neighbor not in distances or new_cost < distances[neighbor]:
+                distances[neighbor] = new_cost
+                parents[neighbor] = vertex
+                heap.heappush(frontier, (new_cost, neighbor, tie_distance))
+            elif new_cost == distances[neighbor] and tie_distance < distances[neighbor]:
+                # Tie-breaking logic
+                distances[neighbor] = new_cost
+                parents[neighbor] = vertex
+                heap.heappush(frontier, (new_cost, neighbor, tie_distance))
+    
+    vertex = exit_node_id
+    length = len(path) - 1
+    while vertex:
+        path.insert(length, vertex)
+        vertex = parents[vertex]
 
     assert target_node_id in path
     assert exit_node_id in path

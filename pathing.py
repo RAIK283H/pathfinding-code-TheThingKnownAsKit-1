@@ -254,6 +254,7 @@ def get_dijkstra_path():
                 ):
                     # Update parent in case of tie-breaking
                     parents[neighbor] = vertex
+                    heap.heappush(frontier, (new_cost, neighbor, tie_distance))
 
         sub_path = []
         current = end_node
@@ -270,7 +271,6 @@ def get_dijkstra_path():
     path_to_exit = dijkstra(target_node_id, exit_node_id, exit_coords)
 
     path = path_to_target[:-1] + path_to_exit
-   
     print(path)
 
     assert target_node_id in path

@@ -10,7 +10,6 @@ Only the start and exit nodes are dead ends (all other nodes have degree >= 2)
 
 
 graph_data = [
-
     [
         [(0, 0), [1]],
         [(200, -200), [0, 2]],

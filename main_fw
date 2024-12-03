@@ -5,7 +5,7 @@ from tabulate import tabulate
 
 def main():
   current_graph = graph_data.graph_data[global_game_data.current_graph_index]
-  result = floyd_warshall_start(current_graph, global_game_data.target_node[0])
+  result = floyd_warshall_start(current_graph, 1)
 
   headers = [f"Node {i}" for i in range(len(result))]
   print(tabulate(result, headers=headers, showindex=headers, tablefmt="grid", numalign="center", floatfmt=".2f"))

@@ -54,7 +54,7 @@ class TestPathFinding(unittest.TestCase):
         self.assertAlmostEqual(first=almost_pi, second=pi, delta=1e-1)
     
     def test_dfs_path(self):
-        expected_dfs_path = [1, 2]
+        expected_dfs_path = [1, 2, 1]
         dfs_path = pathing.get_dfs_path()
         
         self.assertEqual(dfs_path, expected_dfs_path)
@@ -98,6 +98,18 @@ class TestPathFinding(unittest.TestCase):
         for perm in range(len(permutations)):
             for i in range(len(permutations[perm])):
                 self.assertEqual(permutations[perm][i], expected[perm][i])
+
+    def test_floydwarshall_happy_path(self):
+        expected_dijkstra_path = [0, 1, 2]
+        floydwarshall_path = pathing.get_floydwarshall_path()
+
+        self.assertEqual(floydwarshall_path, expected_dijkstra_path)
+
+    def test_floydwarshall_unhappy_path(self):
+        expected_dijkstra_path = [0, 2, 1]
+        floydwarshall_path = pathing.get_floydwarshall_path()
+
+        self.assertNotEqual(floydwarshall_path, expected_dijkstra_path)
 
 if __name__ == '__main__':
     unittest.main()

@@ -286,11 +286,19 @@ def get_dijkstra_path():
 
 # For extra credit
 def get_floydwarshall_path():
+    assert global_game_data is not None
+    assert graph_data is not None
+    
     current_graph = graph_data.graph_data[global_game_data.current_graph_index]
     target_node_id = global_game_data.target_node[global_game_data.current_graph_index]
+
     path = floyd_warshall_start(current_graph, target_node_id)
+
+    assert target_node_id in path
+    assert len(current_graph) - 1 in path
+    assert is_all_connected(path, current_graph)
+
     global_game_data.path_length.append(len(path))
-    print(path)
     return path
 
 def is_all_connected(path, graph):

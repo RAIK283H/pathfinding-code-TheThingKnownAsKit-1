@@ -7,7 +7,7 @@ from f_w import floyd_warshall_start
 
 def set_current_graph_paths():
     global_game_data.graph_paths.clear()
-    # global_game_data.graph_paths.append(get_test_path())
+    global_game_data.graph_paths.append(get_test_path())
     # global_game_data.graph_paths.append(get_random_path())
     # global_game_data.graph_paths.append(get_dfs_path())
     # global_game_data.graph_paths.append(get_bfs_path())
@@ -288,7 +288,7 @@ def get_dijkstra_path():
 def get_floydwarshall_path():
     assert global_game_data is not None
     assert graph_data is not None
-    
+
     current_graph = graph_data.graph_data[global_game_data.current_graph_index]
     target_node_id = global_game_data.target_node[global_game_data.current_graph_index]
 

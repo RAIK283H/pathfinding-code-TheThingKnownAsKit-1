@@ -30,8 +30,6 @@ def floyd_warshall(adj_matrix):
 
 def build_path(parent_matrix, start, target, end):
   def build_subpath(parent_matrix, start, end):
-    print (start)
-    print(end)
     path = []
     current = parent_matrix[start][end]
     while current is not None:

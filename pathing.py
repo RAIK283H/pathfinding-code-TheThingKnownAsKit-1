@@ -7,10 +7,10 @@ from f_w import floyd_warshall_start
 
 def set_current_graph_paths():
     global_game_data.graph_paths.clear()
-    global_game_data.graph_paths.append(get_test_path())
-    global_game_data.graph_paths.append(get_random_path())
-    global_game_data.graph_paths.append(get_dfs_path())
-    global_game_data.graph_paths.append(get_bfs_path())
+    # global_game_data.graph_paths.append(get_test_path())
+    # global_game_data.graph_paths.append(get_random_path())
+    # global_game_data.graph_paths.append(get_dfs_path())
+    # global_game_data.graph_paths.append(get_bfs_path())
     # Edited to use Floyd-Warshall instead
     global_game_data.graph_paths.append(get_floydwarshall_path())
 
@@ -128,8 +128,6 @@ def get_dfs_path():
     while vertex:
         path.insert(0, vertex)
         vertex = parents[vertex]
-
-    path.pop()
 
     assert target_node_id in path
     assert exit_node_id in path
@@ -278,7 +276,6 @@ def get_dijkstra_path():
     path_to_exit = dijkstra(target_node_id, exit_node_id, exit_coords)
 
     path = path_to_target[:-1] + path_to_exit
-    print(path)
 
     assert target_node_id in path
     assert exit_node_id in path
@@ -287,10 +284,14 @@ def get_dijkstra_path():
     global_game_data.path_length.append(len(path))
     return path
 
+# For extra credit
 def get_floydwarshall_path():
     current_graph = graph_data.graph_data[global_game_data.current_graph_index]
     target_node_id = global_game_data.target_node[global_game_data.current_graph_index]
-    return floyd_warshall_start(current_graph, target_node_id)
+    path = floyd_warshall_start(current_graph, target_node_id)
+    global_game_data.path_length.append(len(path))
+    print(path)
+    return path
 
 def is_all_connected(path, graph):
     for i in range(len(path) - 2):
